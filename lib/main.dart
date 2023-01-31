@@ -115,107 +115,110 @@ class _MyAppState extends State<MyApp> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white.withOpacity(0.9),
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.blue),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        title: const Text(
-          'Add new Log',
-          style: TextStyle(color: Colors.blue),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await windowManager.hide();
-            },
-            icon: const Icon(Icons.remove),
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Form(
-            child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              TextFormField(
-                textAlignVertical: TextAlignVertical.top,
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: 'Description',
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              CalendarDatePicker(
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2050),
-                  onDateChanged: (newDate) {}),
-              ElevatedButton(
-                onPressed: () {},
-                child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                    child: const Text('Add')),
-              )
-            ],
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Scaffold(
+        backgroundColor: Colors.white.withOpacity(0.97),
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.blue),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          centerTitle: true,
+          title: const Text(
+            'Add new Log',
+            style: TextStyle(color: Colors.blue),
           ),
-        )),
-      ),
-      drawer: Drawer(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              const CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage('assets/app_icon.ico'),
-              ),
-              const Text(
-                'Suraj Subedi',
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              ListTile(
-                onTap: () {},
-                title: const Text('Add new Log'),
-              ),
-              ListTile(
-                onTap: () {},
-                title: const Text('View Logs'),
-              ),
-              ListTile(
-                onTap: () {},
-                title: const Text('Settings'),
-              ),
-              ListTile(
-                onTap: () {},
-                title: const Text('About'),
-              ),
-              ListTile(
-                onTap: () {},
-                title: const Text('Log Out'),
-              ),
-            ],
+          actions: [
+            IconButton(
+              onPressed: () async {
+                await windowManager.hide();
+              },
+              icon: const Icon(Icons.remove),
+            )
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Form(
+              child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'Title',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  textAlignVertical: TextAlignVertical.top,
+                  maxLines: 5,
+                  decoration: const InputDecoration(
+                    labelText: 'Description',
+                    alignLabelWithHint: true,
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                CalendarDatePicker(
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2050),
+                    onDateChanged: (newDate) {}),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 50),
+                      child: const Text('Add')),
+                )
+              ],
+            ),
+          )),
+        ),
+        drawer: Drawer(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                const CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('assets/app_icon.ico'),
+                ),
+                const Text(
+                  'Suraj Subedi',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ListTile(
+                  onTap: () {},
+                  title: const Text('Add new Log'),
+                ),
+                ListTile(
+                  onTap: () {},
+                  title: const Text('View Logs'),
+                ),
+                ListTile(
+                  onTap: () {},
+                  title: const Text('Settings'),
+                ),
+                ListTile(
+                  onTap: () {},
+                  title: const Text('About'),
+                ),
+                ListTile(
+                  onTap: () {},
+                  title: const Text('Log Out'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
