@@ -33,7 +33,7 @@ void main() async {
   await windowManager.waitUntilReadyToShow(
     windowOptions,
     () async {
-      await windowManager.setAlignment(Alignment.bottomRight);
+      await windowManager.setAlignment(Alignment.topRight);
       await windowManager.show();
     },
   );
@@ -170,7 +170,7 @@ class _MyAppState extends State<MyApp> with WindowListener {
               ElevatedButton(
                 onPressed: () {},
                 child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 50),
                     child: const Text('Add')),
               )
             ],
@@ -186,7 +186,7 @@ class _MyAppState extends State<MyApp> with WindowListener {
               ),
               const CircleAvatar(
                 radius: 50,
-                backgroundImage: const AssetImage('assets/app_icon.ico'),
+                backgroundImage: AssetImage('assets/app_icon.ico'),
               ),
               const Text(
                 'Suraj Subedi',
