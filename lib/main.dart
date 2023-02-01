@@ -1,14 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:system_tray/system_tray.dart';
+import 'package:tray_test1/app/routes/app_pages.dart';
+import 'package:tray_test1/app/utils/theme/theme.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Must add this line.
   await windowManager.ensureInitialized();
   await windowManager.hide();
 
@@ -24,26 +26,22 @@ void main() async {
     size: initialSize,
     maximumSize: initialSize,
     minimumSize: initialSize,
-    backgroundColor: Colors.transparent,
     skipTaskbar: true,
     titleBarStyle: TitleBarStyle.hidden,
-    // titleBarStyle: TitleBarStyle.hidden,
   );
 
   await windowManager.waitUntilReadyToShow(
     windowOptions,
     () async {
-      await windowManager.setAlignment(Alignment.topRight);
+      Platform.isWindows
+          ? await windowManager.setAlignment(Alignment.bottomRight)
+          : await windowManager.setAlignment(Alignment.topRight);
       await windowManager.show();
     },
   );
 
   runApp(
-    const MaterialApp(
-      color: Colors.transparent,
-      debugShowCheckedModeBanner: false,
-      home: MyApp(),
-    ),
+    const MyApp(),
   );
 }
 
@@ -69,13 +67,11 @@ class _MyAppState extends State<MyApp> with WindowListener {
 
     final SystemTray systemTray = SystemTray();
 
-    // We first init the systray menu
     await systemTray.initSystemTray(
       title: "system tray",
       iconPath: path,
     );
 
-    // create context menu
     final Menu menu = Menu();
     await menu.buildFrom([
       MenuItemLabel(
@@ -86,23 +82,18 @@ class _MyAppState extends State<MyApp> with WindowListener {
           label: 'Exit', onClicked: (menuItem) => windowManager.close()),
     ]);
 
-    // set context menu
     await systemTray.setContextMenu(menu);
 
-    // handle system tray event
     systemTray.registerSystemTrayEventHandler((eventName) async {
       debugPrint("eventName: $eventName");
       if (eventName == kSystemTrayEventClick) {
-        if (await windowManager.isVisible()) {
-          await windowManager.hide();
-        } else {
-          await windowManager.show();
-          setState(() {});
-        }
-      }
-
-      if (eventName == kSystemTrayEventRightClick) {
-        await systemTray.popUpContextMenu();
+        Platform.isWindows
+            ? windowManager.show()
+            : systemTray.popUpContextMenu();
+      } else if (eventName == kSystemTrayEventRightClick) {
+        Platform.isWindows
+            ? systemTray.popUpContextMenu()
+            : windowManager.show();
       }
     });
   }
@@ -115,113 +106,11 @@ class _MyAppState extends State<MyApp> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Scaffold(
-        backgroundColor: Colors.white.withOpacity(0.97),
-        appBar: AppBar(
-          iconTheme: const IconThemeData(color: Colors.blue),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          centerTitle: true,
-          title: const Text(
-            'Add new Log',
-            style: TextStyle(color: Colors.blue),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () async {
-                await windowManager.hide();
-              },
-              icon: const Icon(Icons.remove),
-            )
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Form(
-              child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              children: [
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Title',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                TextFormField(
-                  textAlignVertical: TextAlignVertical.top,
-                  maxLines: 5,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    alignLabelWithHint: true,
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                CalendarDatePicker(
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2020),
-                    lastDate: DateTime(2050),
-                    onDateChanged: (newDate) {}),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                      child: const Text('Add')),
-                )
-              ],
-            ),
-          )),
-        ),
-        drawer: Drawer(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/app_icon.ico'),
-                ),
-                const Text(
-                  'Suraj Subedi',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                ListTile(
-                  onTap: () {},
-                  title: const Text('Add new Log'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  title: const Text('View Logs'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  title: const Text('Settings'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  title: const Text('About'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  title: const Text('Log Out'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.fromType(AppTheme.defaultTheme).build(),
+      initialRoute: AppPages.INITIAL,
+      getPages: AppPages.routes,
     );
   }
 
@@ -235,7 +124,9 @@ class _MyAppState extends State<MyApp> with WindowListener {
   void onWindowFocus() async {}
 
   @override
-  void onWindowBlur() async {}
+  void onWindowBlur() async {
+    await windowManager.minimize();
+  }
 
   @override
   void onWindowMaximize() {
