@@ -137,8 +137,8 @@ class LoginView extends GetView<LoginController> with WindowListener {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            onPressed: () async {
-              await windowManager.hide();
+            onPressed: () {
+              windowManager.hide();
             },
             icon: const Icon(Icons.remove),
           )

@@ -4,14 +4,16 @@ import 'package:window_manager/window_manager.dart';
 import 'package:flutter/material.dart';
 
 class LoginController extends GetxController with WindowListener {
+  //TODO: Implement LoginController
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey4 = GlobalKey<FormState>();
 
   final count = 0.obs;
   @override
   void onInit() {
     windowManager.addListener(this);
+    // initSystemTray();
     super.onInit();
   }
 

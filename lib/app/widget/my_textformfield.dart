@@ -38,7 +38,6 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       readOnly: widget.readonlycheck,
       style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
-// make the field white,
         fillColor: Colors.white,
         filled: true,
         labelStyle: const TextStyle(

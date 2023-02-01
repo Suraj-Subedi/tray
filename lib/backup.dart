@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:system_tray/system_tray.dart';
 import 'package:tray_test1/app/routes/app_pages.dart';
@@ -88,22 +87,15 @@ class _MyAppState extends State<MyApp> with WindowListener {
     await systemTray.setContextMenu(menu);
 
     systemTray.registerSystemTrayEventHandler((eventName) async {
-      windowManager.removeListener(this);
-
       debugPrint("eventName: $eventName");
       if (eventName == kSystemTrayEventClick) {
-        if (await windowManager.isVisible()) {
-          await windowManager.hide();
-          windowManager.addListener(this);
-        } else {
-          await windowManager.show();
-          windowManager.addListener(this);
-          setState(() {});
-        }
-      }
-      if (eventName == kSystemTrayEventRightClick) {
-        windowManager.addListener(this);
-        await systemTray.popUpContextMenu();
+        Platform.isWindows
+            ? windowManager.show()
+            : systemTray.popUpContextMenu();
+      } else if (eventName == kSystemTrayEventRightClick) {
+        Platform.isWindows
+            ? systemTray.popUpContextMenu()
+            : windowManager.show();
       }
     });
   }
@@ -116,17 +108,12 @@ class _MyAppState extends State<MyApp> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-        designSize: const Size(375, 750),
-        builder: ((context, child) {
-          ScreenUtil.init(context);
-          return GetMaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.fromType(AppTheme.defaultTheme).build(),
-            initialRoute: AppPages.INITIAL,
-            getPages: AppPages.routes,
-          );
-        }));
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.fromType(AppTheme.defaultTheme).build(),
+      initialRoute: AppPages.INITIAL,
+      getPages: AppPages.routes,
+    );
   }
 
   @override
@@ -140,7 +127,7 @@ class _MyAppState extends State<MyApp> with WindowListener {
 
   @override
   void onWindowBlur() async {
-    await windowManager.minimize();
+    await windowManager.hide();
   }
 
   @override
