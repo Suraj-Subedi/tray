@@ -6,7 +6,7 @@ enum ThemeType {
 }
 
 class AppTheme {
-  static ThemeType defaultTheme = ThemeType.Dark;
+  static ThemeType defaultTheme = ThemeType.Light;
 
   final bool isDark;
   final Color primaryColor;

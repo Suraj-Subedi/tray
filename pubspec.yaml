@@ -31,12 +31,16 @@ environment:
 dependencies:
   bitsdojo_window: ^0.1.5
   cupertino_icons: ^1.0.2
+  dropdown_button2: ^1.9.2
   flutter:
     sdk: flutter
+  flutter_acrylic: ^1.0.0+2
+  flutter_markdown: ^0.6.13+1
   flutter_screenutil: ^5.6.1
   flutter_svg: ^1.1.6
   get: ^4.6.5
   launch_at_startup: ^0.2.1
+  macos_window_utils: ^1.0.2
   package_info_plus: ^3.0.2
   system_tray: ^2.0.2
   window_manager: ^0.3.0
@@ -56,7 +60,6 @@ flutter:
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/
     - assets/images/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

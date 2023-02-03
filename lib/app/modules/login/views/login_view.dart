@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
+import 'package:tray_test1/app/routes/app_pages.dart';
 import 'package:tray_test1/app/utils/asset_strings.dart';
+import 'package:tray_test1/app/utils/theme/theme.dart';
 import 'package:tray_test1/app/utils/validators.dart';
+import 'package:tray_test1/app/widget/custom_button.dart';
 import 'package:tray_test1/app/widget/my_textformfield.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../controllers/login_controller.dart';
 
+ThemeData theme = AppTheme.fromType(AppTheme.defaultTheme).build();
 // class LoginView extends GetView<LoginController> {
 //   const LoginView({Key? key}) : super(key: key);
 //   @override
@@ -126,13 +130,16 @@ import '../controllers/login_controller.dart';
 // }
 
 class LoginView extends GetView<LoginController> with WindowListener {
-  const LoginView({Key? key}) : super(key: key);
+  LoginView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context);
     return Scaffold(
+      // backgroundColor: theme.backgroundColor.withOpacity(0.2),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.black),
         elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
@@ -150,6 +157,16 @@ class LoginView extends GetView<LoginController> with WindowListener {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Image.asset(
+                AssetStrings.logo,
+                height: 140.h,
+                width: 140.h,
+              ),
+              SizedBox(height: 20.h),
+              const Text("Enter Login Credentials",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+              SizedBox(height: 20.h),
               CustomTextFormField(
                   controller: controller.usernameController,
                   leadingIcon: AssetStrings.email_icon,
@@ -168,6 +185,15 @@ class LoginView extends GetView<LoginController> with WindowListener {
                   showEyeIcon: true,
                   showTrailingIcon: true,
                   validator: (value) => Validators.passwordValidator(value)),
+              SizedBox(
+                height: 20.h,
+              ),
+              CustomButton(
+                  text: "Login",
+                  tap: () {
+                    Get.offAllNamed(Routes.HOME);
+                  }),
+              SizedBox(height: 50.h),
             ],
           )),
     );

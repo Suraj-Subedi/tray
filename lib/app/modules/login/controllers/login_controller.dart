@@ -1,10 +1,10 @@
+import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:get/get.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'package:flutter/material.dart';
 
 class LoginController extends GetxController with WindowListener {
-  //TODO: Implement LoginController
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formKey4 = GlobalKey<FormState>();
@@ -13,7 +13,9 @@ class LoginController extends GetxController with WindowListener {
   @override
   void onInit() {
     windowManager.addListener(this);
-    // initSystemTray();
+    Window.setEffect(
+        effect: WindowEffect.transparent,
+        color: const Color.fromARGB(0, 236, 236, 236));
     super.onInit();
   }
 
