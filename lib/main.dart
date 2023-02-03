@@ -27,7 +27,7 @@ Future<void> main() async {
     size: initialSize,
     maximumSize: initialSize,
     minimumSize: initialSize,
-    // backgroundColor: Colors.transparent,
+    backgroundColor: Colors.transparent,
     skipTaskbar: true,
     titleBarStyle: TitleBarStyle.hidden,
   );

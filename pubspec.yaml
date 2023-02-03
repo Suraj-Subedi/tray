@@ -40,7 +40,6 @@ dependencies:
   flutter_svg: ^1.1.6
   get: ^4.6.5
   launch_at_startup: ^0.2.1
-  macos_window_utils: ^1.0.2
   package_info_plus: ^3.0.2
   system_tray: ^2.0.2
   window_manager: ^0.3.0
