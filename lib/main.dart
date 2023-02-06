@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,11 +15,15 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
-  await Window.setEffect(
-  effect: WindowEffect.acrylic
-);
   await Window.initialize();
+  if (Platform.isWindows) {
+    Window.hideWindowControls();
+    Window.hideTitle();
+    Window.makeTitlebarTransparent();
+  }
+  await windowManager.ensureInitialized();
+
+  await Window.setEffect(effect: WindowEffect.acrylic);
   await windowManager.hide();
 
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -31,8 +36,7 @@ void main() async {
   var initialSize = const Size(375, 750);
   WindowOptions windowOptions = WindowOptions(
     size: initialSize,
-    maximumSize: initialSize,
-    minimumSize: initialSize,
+    center: false,
     skipTaskbar: true,
   );
 
@@ -50,6 +54,16 @@ void main() async {
   runApp(
     const MyApp(),
   );
+
+  if (Platform.isWindows) {
+    doWhenWindowReady(() {
+      const initialSize = Size(400, 800);
+      appWindow.minSize = initialSize;
+      appWindow.size = initialSize;
+      appWindow.alignment = Alignment.bottomRight;
+      appWindow.show();
+    });
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -84,9 +98,16 @@ class _MyAppState extends State<MyApp> with WindowListener {
     await menu.buildFrom([
       MenuItemLabel(
           label: 'Show',
-          onClicked: (menuItem) async => {await windowManager.show()}),
+          onClicked: (menuItem) async => {
+                (Platform.isWindows)
+                    ? windowManager.restore()
+                    : await windowManager.show()
+              }),
       MenuItemLabel(
-          label: 'Hide', onClicked: (menuItem) => windowManager.hide()),
+          label: 'Hide',
+          onClicked: (menuItem) => (Platform.isWindows)
+              ? windowManager.minimize()
+              : windowManager.hide()),
       MenuItemLabel(
           label: 'Exit', onClicked: (menuItem) => windowManager.close()),
     ]);
@@ -98,13 +119,23 @@ class _MyAppState extends State<MyApp> with WindowListener {
 
       debugPrint("eventName: $eventName");
       if (eventName == kSystemTrayEventClick) {
-        if (await windowManager.isVisible()) {
-          await windowManager.hide();
-          windowManager.addListener(this);
+        if (Platform.isWindows) {
+          if (await windowManager.isMinimized()) {
+            await windowManager.restore();
+            setState(() {});
+          } else {
+            await windowManager.minimize();
+            setState(() {});
+          }
         } else {
-          await windowManager.show();
-          windowManager.addListener(this);
-          setState(() {});
+          if (await windowManager.isVisible()) {
+            await windowManager.hide();
+            windowManager.addListener(this);
+          } else {
+            await windowManager.show();
+            windowManager.addListener(this);
+            setState(() {});
+          }
         }
       }
       if (eventName == kSystemTrayEventRightClick) {
@@ -146,7 +177,9 @@ class _MyAppState extends State<MyApp> with WindowListener {
 
   @override
   void onWindowBlur() async {
-    await windowManager.hide();
+    (Platform.isWindows)
+        ? windowManager.minimize()
+        : await windowManager.hide();
   }
 
   @override
