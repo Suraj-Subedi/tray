@@ -57,7 +57,7 @@ void main() async {
 
   if (Platform.isWindows) {
     doWhenWindowReady(() {
-      const initialSize = Size(400, 800);
+      const initialSize = Size(375, 750);
       appWindow.minSize = initialSize;
       appWindow.size = initialSize;
       appWindow.alignment = Alignment.bottomRight;
@@ -122,26 +122,30 @@ class _MyAppState extends State<MyApp> with WindowListener {
         if (Platform.isWindows) {
           if (await windowManager.isMinimized()) {
             await windowManager.restore();
-            setState(() {});
+            // setState(() {});
+            windowManager.addListener(this);
+
+            return;
           } else {
             await windowManager.minimize();
-            setState(() {});
+            // setState(() {});
+            windowManager.addListener(this);
+
+            return;
           }
         } else {
           if (await windowManager.isVisible()) {
             await windowManager.hide();
-            windowManager.addListener(this);
           } else {
             await windowManager.show();
-            windowManager.addListener(this);
             setState(() {});
           }
         }
       }
       if (eventName == kSystemTrayEventRightClick) {
-        windowManager.addListener(this);
         await systemTray.popUpContextMenu();
       }
+      windowManager.addListener(this);
     });
   }
 
@@ -173,7 +177,9 @@ class _MyAppState extends State<MyApp> with WindowListener {
   void onWindowClose() {}
 
   @override
-  void onWindowFocus() async {}
+  void onWindowFocus() async {
+    (Platform.isWindows) ? windowManager.restore() : await windowManager.show();
+  }
 
   @override
   void onWindowBlur() async {

@@ -40,7 +40,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       decoration: InputDecoration(
         fillColor: Colors.white,
         filled: true,
-        labelStyle: const TextStyle(
+        hintStyle: const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.normal,
         ),
@@ -67,9 +67,11 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                   )
                 : Icon(widget.trailingIcon)
             : null,
-        labelText: widget.labelName,
+        // labelText: widget.labelName,
         // not show label text when field is active
-        floatingLabelBehavior: FloatingLabelBehavior.never,
+        // floatingLabelBehavior: FloatingLabelBehavior.never,
+        hintText: widget.labelName,
+
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
             color: AppColors.borderGrey,
