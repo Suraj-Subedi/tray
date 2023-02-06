@@ -1,3 +1,4 @@
+import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:get/get.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -14,6 +15,7 @@ class LoginController extends GetxController with WindowListener {
   void onInit() {
     windowManager.addListener(this);
     // initSystemTray();
+    Window.setEffect(effect: WindowEffect.acrylic);
     super.onInit();
   }
 

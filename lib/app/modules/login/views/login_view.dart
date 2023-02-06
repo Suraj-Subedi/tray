@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
-import 'package:tray_test1/app/utils/asset_strings.dart';
-import 'package:tray_test1/app/utils/validators.dart';
-import 'package:tray_test1/app/widget/my_textformfield.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../controllers/login_controller.dart';
@@ -129,47 +125,72 @@ class LoginView extends GetView<LoginController> with WindowListener {
   const LoginView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context);
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        actions: [
-          IconButton(
-            onPressed: () {
-              windowManager.hide();
-            },
-            icon: const Icon(Icons.remove),
-          )
-        ],
+    // ScreenUtil.init(context);
+    // return Scaffold(
+    //   backgroundColor: Colors.transparent,
+    //   appBar: AppBar(
+    //     iconTheme: const IconThemeData(color: Colors.white),
+    //     elevation: 0,
+    //     backgroundColor: Colors.transparent,
+    //     actions: [
+    //       IconButton(
+    //         onPressed: () {
+    //           windowManager.hide();
+    //         },
+    //         icon: const Icon(Icons.remove),
+    //       )
+    //     ],
+    //   ),
+    //   body: Container(
+    //       padding: EdgeInsets.all(20.w),
+    //       child: Column(
+    //         mainAxisAlignment: MainAxisAlignment.center,
+    //         crossAxisAlignment: CrossAxisAlignment.stretch,
+    //         children: [
+    //           CustomTextFormField(
+    //               controller: controller.usernameController,
+    //               leadingIcon: AssetStrings.email_icon,
+    //               labelName: "Email",
+    //               // trailingIcon: Icons.check
+    //               showEyeIcon: false,
+    //               showTrailingIcon: false,
+    //               validator: (value) => Validators.emailValidator(value)),
+    //           SizedBox(
+    //             height: 20.h,
+    //           ),
+    //           CustomTextFormField(
+    //               controller: controller.passwordController,
+    //               leadingIcon: AssetStrings.key,
+    //               labelName: "Password",
+    //               showEyeIcon: true,
+    //               showTrailingIcon: true,
+    //               validator: (value) => Validators.passwordValidator(value)),
+    //         ],
+    //       )),
+    // );
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withOpacity(0.2),
+            Colors.white.withOpacity(0.1),
+            Colors.white.withOpacity(0.2),
+            Colors.white.withOpacity(0.1),
+          ],
+        ),
       ),
-      body: Container(
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CustomTextFormField(
-                  controller: controller.usernameController,
-                  leadingIcon: AssetStrings.email_icon,
-                  labelName: "Email",
-                  // trailingIcon: Icons.check
-                  showEyeIcon: false,
-                  showTrailingIcon: false,
-                  validator: (value) => Validators.emailValidator(value)),
-              SizedBox(
-                height: 20.h,
-              ),
-              CustomTextFormField(
-                  controller: controller.passwordController,
-                  leadingIcon: AssetStrings.key,
-                  labelName: "Password",
-                  showEyeIcon: true,
-                  showTrailingIcon: true,
-                  validator: (value) => Validators.passwordValidator(value)),
-            ],
-          )),
+      child: const Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: Text(
+            'HomeView is working',
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+      ),
     );
+  
   }
 }

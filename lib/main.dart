@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:system_tray/system_tray.dart';
@@ -14,6 +15,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
+  await Window.setEffect(
+  effect: WindowEffect.acrylic
+);
+  await Window.initialize();
   await windowManager.hide();
 
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -29,12 +34,12 @@ void main() async {
     maximumSize: initialSize,
     minimumSize: initialSize,
     skipTaskbar: true,
-    titleBarStyle: TitleBarStyle.hidden,
   );
 
   await windowManager.waitUntilReadyToShow(
     windowOptions,
     () async {
+      await windowManager.setAsFrameless();
       Platform.isWindows
           ? await windowManager.setAlignment(Alignment.bottomRight)
           : await windowManager.setAlignment(Alignment.topRight);
@@ -60,6 +65,7 @@ class _MyAppState extends State<MyApp> with WindowListener {
     windowManager.addListener(this);
     initSystemTray();
     super.initState();
+    Window.setEffect(effect: WindowEffect.acrylic);
     setState(() {});
   }
 
@@ -140,7 +146,7 @@ class _MyAppState extends State<MyApp> with WindowListener {
 
   @override
   void onWindowBlur() async {
-    await windowManager.minimize();
+    await windowManager.hide();
   }
 
   @override
