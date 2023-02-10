@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:system_tray/system_tray.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
@@ -19,13 +21,14 @@ void main() async {
   );
   await LaunchAtStartup.instance.enable();
 
-  var initialSize = const Size(375, 750);
+  var initialSize = const Size(330, 650);
   WindowOptions windowOptions = WindowOptions(
     size: initialSize,
-    maximumSize: initialSize,
-    minimumSize: initialSize,
+    // maximumSize: initialSize,
+    // minimumSize: initialSize,
     backgroundColor: Colors.transparent,
     skipTaskbar: true,
+
     titleBarStyle: TitleBarStyle.hidden,
     // titleBarStyle: TitleBarStyle.hidden,
   );
@@ -33,16 +36,21 @@ void main() async {
   await windowManager.waitUntilReadyToShow(
     windowOptions,
     () async {
-      await windowManager.setAlignment(Alignment.topRight);
+      await windowManager.setAlignment(Alignment.bottomRight);
       await windowManager.show();
     },
   );
 
+  await localNotifier.setup(
+    appName: 'Log Tracker',
+    shortcutPolicy: ShortcutPolicy.requireCreate,
+  );
+
   runApp(
-    const MaterialApp(
-      color: Colors.transparent,
+    MaterialApp(
+      color: Colors.white.withOpacity(0),
       debugShowCheckedModeBanner: false,
-      home: MyApp(),
+      home: const MyApp(),
     ),
   );
 }
@@ -54,13 +62,28 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with WindowListener {
+class _MyAppState extends State<MyApp>
+    with WindowListener, SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1000),
+  );
+
+  late final Animation<Offset> _animation = Tween<Offset>(
+          begin: const Offset(0, 1), end: Offset.zero)
+      .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+  bool _isVisible = true;
+  bool _isClickTriggered = false;
+  double height = 10;
+
   @override
   void initState() {
     windowManager.addListener(this);
     initSystemTray();
     super.initState();
     setState(() {});
+    _controller.forward();
   }
 
   Future<void> initSystemTray() async {
@@ -74,6 +97,10 @@ class _MyAppState extends State<MyApp> with WindowListener {
       title: "system tray",
       iconPath: path,
     );
+
+    setState(() {
+      height = 1000;
+    });
 
     // create context menu
     final Menu menu = Menu();
@@ -89,15 +116,20 @@ class _MyAppState extends State<MyApp> with WindowListener {
     // set context menu
     await systemTray.setContextMenu(menu);
 
-    // handle system tray event
     systemTray.registerSystemTrayEventHandler((eventName) async {
       debugPrint("eventName: $eventName");
       if (eventName == kSystemTrayEventClick) {
-        if (await windowManager.isVisible()) {
-          await windowManager.hide();
-        } else {
+        setState(() {
+          _isClickTriggered = true;
+          _isVisible = !_isVisible;
+        });
+
+        if (_isVisible) {
           await windowManager.show();
-          setState(() {});
+          _controller.forward();
+        } else {
+          _controller.reverse();
+          await windowManager.hide();
         }
       }
 
@@ -116,66 +148,84 @@ class _MyAppState extends State<MyApp> with WindowListener {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white.withOpacity(0.9),
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.blue),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        title: const Text(
-          'Add new Log',
-          style: TextStyle(color: Colors.blue),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await windowManager.hide();
-            },
-            icon: const Icon(Icons.remove),
-          )
-        ],
-      ),
+      backgroundColor: Colors.white.withOpacity(0),
+      // appBar: AppBar(
+      //   iconTheme: const IconThemeData(color: Colors.blue),
+      //   elevation: 0,
+      //   backgroundColor: Colors.transparent,
+      //   centerTitle: true,
+      //   title: const Text(
+      //     'Add new Log',
+      //     style: TextStyle(color: Colors.blue),
+      //   ),
+      //   actions: [
+      //     IconButton(
+      //       onPressed: () async {
+      //         await windowManager.hide();
+      //       },
+      //       icon: const Icon(Icons.remove),
+      //     )
+      //   ],
+      // ),
       body: SingleChildScrollView(
-        child: Form(
-            child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              TextFormField(
-                textAlignVertical: TextAlignVertical.top,
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: 'Description',
-                  alignLabelWithHint: true,
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              CalendarDatePicker(
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2050),
-                  onDateChanged: (newDate) {}),
-              ElevatedButton(
-                onPressed: () {},
-                child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                    child: const Text('Add')),
-              )
-            ],
+        child: SlideTransition(
+          position: _animation,
+          child: Flexible(
+            fit: FlexFit.tight,
+            child: Container(
+              height: 1000,
+              color: Colors.white,
+              child: Form(
+                  child: Column(
+                children: [
+                  AppBar(),
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Expanded(
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: 'Title',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          TextFormField(
+                            textAlignVertical: TextAlignVertical.top,
+                            maxLines: 5,
+                            decoration: const InputDecoration(
+                              labelText: 'Description',
+                              alignLabelWithHint: true,
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          CalendarDatePicker(
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2020),
+                              lastDate: DateTime(2050),
+                              onDateChanged: (newDate) {}),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 50),
+                                child: const Text('Add')),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              )),
+            ),
           ),
-        )),
+        ),
       ),
       drawer: Drawer(
         child: SingleChildScrollView(
@@ -219,11 +269,40 @@ class _MyAppState extends State<MyApp> with WindowListener {
           ),
         ),
       ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () async {
+      //     LocalNotification localNotification = LocalNotification(
+      //         title: 'Log Tracker',
+      //         body: 'Hello Flutter!',
+      //         actions: [
+      //           LocalNotificationAction(
+      //             type: 'button',
+      //             text: 'Open',
+      //           ),
+      //         ]);
+
+      //     localNotification.onShow = () {
+      //       print('onShow ${localNotification.identifier}');
+      //     };
+
+      //     localNotification.onClose = (reason) {
+      //       print('onClose ${localNotification.identifier}');
+      //     };
+      //     await Future.delayed(const Duration(seconds: 10));
+
+      //     await localNotification.show();
+      //   },
+      //   child: const Icon(Icons.notification_add),
+      // ),
     );
   }
 
   @override
-  Future<void> onWindowEvent(String eventName) async {}
+  Future<void> onWindowEvent(String eventName) async {
+    switch (eventName) {
+      
+    }
+  }
 
   @override
   void onWindowClose() {}
@@ -232,7 +311,22 @@ class _MyAppState extends State<MyApp> with WindowListener {
   void onWindowFocus() async {}
 
   @override
-  void onWindowBlur() async {}
+  void onWindowBlur() async {
+    // Timer(const Duration(milliseconds: 50), () {
+    //   if (!_isClickTriggered && _isVisible) {
+    //     // Perform hide actions here
+
+    //     windowManager.hide();
+
+    //     setState(() {
+    //       _isVisible = false;
+    //     });
+    //   }
+    //   setState(() {
+    //     _isClickTriggered = false;
+    //   });
+    // });
+  }
 
   @override
   void onWindowMaximize() {
